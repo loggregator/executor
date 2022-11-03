@@ -92,6 +92,10 @@ func (r *logRateLimiter) Limit(sourceName string, logLength int) error {
 	return nil
 }
 
+func (r *logRateLimiter) updateTags(tags map[string]string) {
+	r.tags = tags
+}
+
 func (r *logRateLimiter) emitMetrics() {
 	if r.logMetricsEmitInterval <= 0 {
 		return

@@ -1,6 +1,8 @@
 package log_streamer
 
-import "io"
+import (
+	"io"
+)
 
 type bufferStreamer struct {
 	stdout     io.Writer
@@ -37,3 +39,6 @@ func (bs *bufferStreamer) SourceName() string {
 }
 
 func (bs *bufferStreamer) Stop() {}
+
+func (bs *bufferStreamer) UpdateTags(tags map[string]string) {
+}

@@ -93,6 +93,8 @@ type storeNode struct {
 
 	startTime         time.Time
 	regenerateCertsCh chan struct{}
+
+	logStreamer log_streamer.LogStreamer
 }
 
 func newStoreNode(
@@ -504,6 +506,7 @@ func (n *storeNode) Run(logger lager.Logger) error {
 	}
 
 	logStreamer := logStreamerFromLogConfig(n.info.LogConfig, n.metronClient, n.config.MaxLogLinesPerSecond, n.info.LogRateLimitBytesPerSecond, n.config.MetricReportInterval)
+	n.logStreamer = logStreamer
 
 	credManagerRunner := n.credManager.Runner(logger, n, n.regenerateCertsCh)
 
@@ -594,6 +597,16 @@ func (n *storeNode) Update(logger lager.Logger, req *executor.UpdateRequest) {
 	n.info.InternalRoutes = req.InternalRoutes
 	n.infoLock.Unlock()
 	n.regenerateCertsCh <- struct{}{}
+	n.logStreamer.UpdateTags(req.Tags)
+	n.info.LogConfig.Tags = req.Tags
+	n.info.MetricsConfig.Tags = req.Tags
+
+	logConfig, err := json.Marshal(n.info.LogConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	n.gardenContainer.SetProperty("log_config", string(logConfig))
 }
 
 func (n *storeNode) Stop(logger lager.Logger) {

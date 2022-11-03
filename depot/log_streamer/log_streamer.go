@@ -27,6 +27,8 @@ type LogStreamer interface {
 	SourceName() string
 
 	Stop()
+
+	UpdateTags(tags map[string]string)
 }
 
 type logStreamer struct {
@@ -69,6 +71,11 @@ func New(config executor.LogConfig, metronClient loggingclient.IngressClient, ma
 	}
 }
 
+func (e *logStreamer) UpdateTags(tags map[string]string) {
+	e.stdout.updateTags(tags)
+	e.stderr.updateTags(tags)
+}
+
 func (e *logStreamer) Stdout() io.Writer {
 	return e.stdout
 }
@@ -86,15 +93,7 @@ func (e *logStreamer) WithSource(sourceName string) LogStreamer {
 	if sourceName == "" {
 		sourceName = e.SourceName()
 	}
-
-	ctx, cancelFunc := context.WithCancel(e.ctx)
-
-	return &logStreamer{
-		ctx:        ctx,
-		cancelFunc: cancelFunc,
-		stdout:     e.stdout.withSource(ctx, sourceName),
-		stderr:     e.stderr.withSource(ctx, sourceName),
-	}
+	return e
 }
 
 func (e *logStreamer) SourceName() string {

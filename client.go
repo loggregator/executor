@@ -90,11 +90,13 @@ func NewRunRequest(guid string, runInfo *RunInfo, tags Tags) RunRequest {
 type UpdateRequest struct {
 	Guid           string
 	InternalRoutes internalroutes.InternalRoutes `json:"internal_routes"`
+	Tags           map[string]string
 }
 
-func NewUpdateRequest(guid string, internalRoutes internalroutes.InternalRoutes) UpdateRequest {
+func NewUpdateRequest(guid string, internalRoutes internalroutes.InternalRoutes, tags map[string]string) UpdateRequest {
 	return UpdateRequest{
 		Guid:           guid,
 		InternalRoutes: internalRoutes,
+		Tags:           tags,
 	}
 }

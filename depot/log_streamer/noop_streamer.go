@@ -19,3 +19,5 @@ func (noopStreamer) WithSource(sourceName string) LogStreamer {
 }
 func (noopStreamer) SourceName() string { return DefaultLogSource }
 func (noopStreamer) Stop()              {}
+
+func (noopStreamer) UpdateTags(tags map[string]string) {}

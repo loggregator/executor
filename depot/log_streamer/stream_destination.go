@@ -41,6 +41,11 @@ func newStreamDestination(
 	}
 }
 
+func (destination *streamDestination) updateTags(tags map[string]string) {
+	destination.tags = tags
+	destination.logRateLimiter.updateTags(tags)
+}
+
 func (destination *streamDestination) lockAndFlush() {
 	destination.processLock.Lock()
 	defer destination.processLock.Unlock()
